@@ -771,6 +771,7 @@ class VariantSelects extends HTMLElement {
       this.updateVariantInput();
       this.renderProductInfo();
       this.updateShareUrl();
+      this.updateVariantText();
     }
   }
 
@@ -799,6 +800,8 @@ class VariantSelects extends HTMLElement {
     modalContent.prepend(newMediaModal);
   }
 
+
+
   updateURL() {
     if (!this.currentVariant || this.dataset.updateUrl === 'false') return;
     window.history.replaceState({ }, '', `${this.dataset.url}?variant=${this.currentVariant.id}`);
@@ -817,6 +820,12 @@ class VariantSelects extends HTMLElement {
       input.value = this.currentVariant.id;
       input.dispatchEvent(new Event('change', { bubbles: true }));
     });
+  }
+
+  updateVariantText() {
+    const variantText = document.querySelector('.variant-title');
+    variantText.innerHTML = this.currentVariant.title
+    console.log(variantText);
   }
 
   updatePickupAvailability() {
@@ -857,6 +866,7 @@ class VariantSelects extends HTMLElement {
 
   toggleAddButton(disable = true, text, modifyClass = true) {
     const productForm = document.getElementById(`product-form-${this.dataset.section}`);
+    console.log('add to cart');
     if (!productForm) return;
     const addButton = productForm.querySelector('[name="add"]');
     const addButtonText = productForm.querySelector('[name="add"] > span');

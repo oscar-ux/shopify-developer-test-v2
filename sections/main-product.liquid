@@ -16,12 +16,17 @@
     .section-{{ section.id }}-padding {
       padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
       padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+      padding-left: 25px;
+      padding-right: 27px;
+      max-width: 1440px;
     }
 
     @media screen and (min-width: 750px) {
       .section-{{ section.id }}-padding {
         padding-top: {{ section.settings.padding_top }}px;
         padding-bottom: {{ section.settings.padding_bottom }}px;
+        padding-left: 58px;
+        padding-right: 67px;
       }
     }
   {%- endstyle -%}
@@ -375,39 +380,7 @@
                   </div>
                 </details>
               </div>
-            {%- when 'quantity_selector' -%}
-              <div
-                class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}"
-                {{ block.shopify_attributes }}
-              >
-                <label class="form__label" for="Quantity-{{ section.id }}">
-                  {{ 'products.product.quantity.label' | t }}
-                </label>
-
-                <quantity-input class="quantity">
-                  <button class="quantity__button no-js-hidden" name="minus" type="button">
-                    <span class="visually-hidden">
-                      {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
-                    </span>
-                    {% render 'icon-minus' %}
-                  </button>
-                  <input
-                    class="quantity__input"
-                    type="number"
-                    name="quantity"
-                    id="Quantity-{{ section.id }}"
-                    min="1"
-                    value="1"
-                    form="{{ product_form_id }}"
-                  >
-                  <button class="quantity__button no-js-hidden" name="plus" type="button">
-                    <span class="visually-hidden">
-                      {{- 'products.product.quantity.increase' | t: product: product.title | escape -}}
-                    </span>
-                    {% render 'icon-plus' %}
-                  </button>
-                </quantity-input>
-              </div>
+              
             {%- when 'popup' -%}
               <modal-opener
                 class="product-popup-modal__opener no-js-hidden quick-add-hidden"
@@ -478,9 +451,17 @@
                     {{ block.shopify_attributes }}
                   >
                     {%- for option in product.options_with_values -%}
-                      <fieldset class="js product-form__input">
-                        <legend class="form__label">{{ option.name }}</legend>
+                      <fieldset class="js product-form__input product-form__swatches">
+                        <legend class="form__label">{{ option.name }}: <span class="variant-title">{{ product.selected_or_first_available_variant.title }}</span></legend>
                         {%- for value in option.values -%}
+                          {%-liquid
+                            for variant in product.variants
+                              if variant.title contains value
+                                assign swatch_image = variant.image
+                                break
+                              endif
+                            endfor
+                          -%}
                           <input
                             type="radio"
                             id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
@@ -492,7 +473,12 @@
                             {% endif %}
                           >
                           <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
-                            {{ value }}
+                            <img
+                              srcset="{{ swatch_image | image_url: width: '97x97' }} 750w"
+                              src="{{ swatch_image | image_url: width: '50x50' }}"
+                              alt="{{ value }}"
+                              loading="lazy"
+                            />
                           </label>
                         {%- endfor -%}
                       </fieldset>
@@ -576,7 +562,7 @@
                 </div>
               </noscript>
             {%- when 'buy_buttons' -%}
-              <div {{ block.shopify_attributes }}>
+              <div {{ block.shopify_attributes }} class="product-form-wrapper">
                 <product-form class="product-form">
                   <div class="product-form__error-message-wrapper" role="alert" hidden>
                     <svg
@@ -602,6 +588,32 @@
                       disabled
                     >
                     <div class="product-form__buttons">
+                      <div class="quantity-wrapper">
+                        <quantity-input class="quantity">
+                          <button class="quantity__button no-js-hidden" name="minus" type="button">
+                            <span class="visually-hidden">
+                              {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
+                            </span>
+                            {% render 'icon-minus' %}
+                          </button>
+                          <input
+                            class="quantity__input"
+                            type="number"
+                            name="quantity"
+                            id="Quantity-{{ section.id }}"
+                            min="1"
+                            value="1"
+                            form="{{ product_form_id }}"
+                          >
+                          <button class="quantity__button no-js-hidden" name="plus" type="button">
+                            <span class="visually-hidden">
+                              {{- 'products.product.quantity.increase' | t: product: product.title | escape -}}
+                            </span>
+                            {% render 'icon-plus' %}
+                          </button>
+                        </quantity-input>
+                        <span class="total-text" hidden></span>
+                      </div>
                       <button
                         type="submit"
                         name="add"
