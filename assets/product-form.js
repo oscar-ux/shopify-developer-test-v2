@@ -65,7 +65,6 @@ if (!customElements.get('product-form')) {
           const quantityElem = document.querySelector('.quantity-wrapper .total-text');
           quantityElem.textContent = `Your total: ${(( parseInt(this.form.quantity.value) * response.final_price) / 100).toLocaleString("en-US", {style:"currency", currency:"USD"})}`;
           quantityElem.hidden = false;
-          console.log(response);
         })
         .catch((e) => {
           console.error(e);

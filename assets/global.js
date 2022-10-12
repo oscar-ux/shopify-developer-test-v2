@@ -825,7 +825,6 @@ class VariantSelects extends HTMLElement {
   updateVariantText() {
     const variantText = document.querySelector('.variant-title');
     variantText.innerHTML = this.currentVariant.title
-    console.log(variantText);
   }
 
   updatePickupAvailability() {
@@ -866,7 +865,6 @@ class VariantSelects extends HTMLElement {
 
   toggleAddButton(disable = true, text, modifyClass = true) {
     const productForm = document.getElementById(`product-form-${this.dataset.section}`);
-    console.log('add to cart');
     if (!productForm) return;
     const addButton = productForm.querySelector('[name="add"]');
     const addButtonText = productForm.querySelector('[name="add"] > span');
